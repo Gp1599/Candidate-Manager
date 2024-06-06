@@ -8,7 +8,7 @@ import CandidateManagerMessages
 
 candidate = None;
 
-# 
+# Prints the main menu options
 def getMainMenuOption():
     print('Main Menu: ')
     print('0 - \tEnter new attrbiute')
@@ -49,8 +49,6 @@ def sendCandidate(clientSocket):
             print('Congradulations, ' + candidate.getName() + '! You have been accepted!')
         case CandidateStatus.rejected:
             print('Sorry + ' + candidate.getName() + '! You have been rejected!')
-
-
 
 #Main program for the candidate manager client
 def main():

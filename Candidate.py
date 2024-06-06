@@ -3,7 +3,7 @@ class Candidate:
     #Initializes the candidate with the specified name
     def __init__(self, name):
         self.name = ''
-        self.attributes = {}
+        self.attributes = { "attributeName": "attributeValue" }
     
     #Returns the candidate's name
     def getName(self):

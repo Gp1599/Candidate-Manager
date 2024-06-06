@@ -2,14 +2,16 @@ import sys
 import socket
 import threading
 
-import Candidate
-import CandidateInvariant
 import CandidateManagerPort
 
+import Candidate
+import CandidateInvariant
+import CandidateSelectionPool
+
+
 #Represent the organization of received candidates
-accepted_candidates = None
+accepted_candidates = CandidateSelectionPool.CandidateSelectionPool()
 waitlisted_candidates = []
-received_candidates = []
 
 #Represents the candidate invariant that the host needs all candidates to satisfy
 candidate_invariant = CandidateInvariant.CandidateInvariant()
@@ -22,7 +24,8 @@ def recieve_candidates():
     #Initalize the host socket
     host_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     while running:
-        packet, clientAddr = host_socket.recv(1024)
+        accepted_socket, socketAddress = host_socket.accept()
+        packet, clientAddr = accepted_socket.recv(1024)
 
         #Check to see if the received candidate obeys the host's candidate invariant. If it does accept it. Otherwise, reject it.
     
