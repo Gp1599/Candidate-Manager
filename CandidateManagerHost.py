@@ -15,6 +15,7 @@ waitlisted_candidates = []
 
 #Represents the candidate invariant that the host needs all candidates to satisfy
 candidate_invariant = CandidateInvariant.CandidateInvariant()
+candidate_invariant_done = False
 
 #Global variable for keeping the program running
 running = True 
@@ -46,6 +47,7 @@ def main():
     #Run the candidate manager host loop
     hostThread = threading.Thread('Candidate Host Thread', recieve_candidates)
     hostThread.start()
+
     while running:
         mainMenu()
     
@@ -69,26 +71,39 @@ class CandidateSelection:
 
 def promptInvariant():
     global candidate_invariant
+    global candidate_invariant_done
 
     print('Create a candidate invariant:')
     while True:
         variableName = input('Enter variable name: ')
         if(variableName == '_quit'):
+            candidate_invariant_done = True
             break
 
         print('Specify the variable type: ')
         print('0 - String (e.g. age, name)')
-        print('1 - Integer (e.g. 1 3, 11)')
-        print('2 - Decimal (e.g. 1.2)')
+        print('1 - Integer Range (e.g. 1 3, 11)')
 
         try:
             variableType = int(input('Enter number: '))
-            if variableType < 0 or variableType > 2:
-                print('Error: Invalid Value (must be between 0-2)!')
-            else:
-                candidate_invariant.addRule(variableName, variableType)
-        except Exception:
+        except TypeError:
             print('Error: invalid value (must be an integer)!')
+            return
+        
+        if variableType < 0 or variableType > 1:
+            print('Error: Invalid Value (must be between 0-2)!')
+        else:
+            match variableType:
+                case 0:
+                    candidate_invariant.addRule(variableName, CandidateInvariant.CandidateInvariantStringRule())
+                case 1:
+                    try:
+                        min = int(input('Enter minimum value: '))
+                        max = int(input('Enter maximum value: '))
+                        candidate_invariant.addRule(variableName, CandidateInvariant.CandidateInvariantIntRangeRule(min, max))
+                    except TypeError:
+                        print('Error: invalid value; must be an integer')
+        
 
 #The main menu loop to manage candidates
 def mainMenu():
@@ -109,4 +124,4 @@ def mainMenu():
         running = False
 
 
-main() #Run the host (main programi
+main() #Run the host main program
