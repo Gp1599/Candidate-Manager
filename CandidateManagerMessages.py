@@ -5,10 +5,10 @@ import CandidateInvariant
 def createCandidateMessage(candidate):
     message = bytearray('', 'ascii')
 
-    insertNumberToMessage(message, 0)
+    insertIntToMessage(message, 0)
 
     nameBytes = bytearray(candidate.getName(), 'ascii')
-    insertNumberToMessage(message, len(nameBytes))
+    insertIntToMessage(message, len(nameBytes))
 
     for attributeName in candidate.getAttributeNames():
         attributeValue = candidate.getAttribute(attributeName)
@@ -31,7 +31,7 @@ def createCandidateFromMessage(message, invariant):
 # Creates a candidate invariant request for the host.
 def createCandidateInvariantRequestMessage():
     message = bytearray('', 'ascii')
-    insertNumberToMessage(message, 1)
+    insertIntToMessage(message, 1)
     return message
 
 # Creates a message that contains the data for the specified invariant.
@@ -57,33 +57,72 @@ def createCandidateInvariantFromMessage(message):
     return invariant
 
 # A utility function that inserts the specified int or float value into the specified message.
-def insertNumberToMessage(message, value):
-    message += (value >> 24) & 0xFF
-    message += (value >> 16) & 0xFF
-    message += (value >> 08) & 0xFF
-    message += (value >> 00) & 0xFF      
+def insertIntToMessage(message, value):
+    byte8 = (value >>24) & 0xFF
+    byte4 = (value >> 16) & 0xFF
+    byte2 = (value >> 8) & 0xFF
+    byte1 = (value >> 0) & 0xFF
+
+    message.append(byte8)
+    message.append(byte4)
+    message.append(byte2)
+    message.append(byte1)      
 
 # A utility function that inserts the specified string value into the specified message.
 def insertStringToMessage(message, value):
     stringBytes = bytearray(value, 'ascii')
-    insertNumberToMessage(message, stringBytes)
-    message += stringBytes
+    insertIntToMessage(message, len(stringBytes))
+    for byte in stringBytes:
+        message.append(byte)
 
 # A utility function that extracts an integer from the specified message.
-def extractNumberFromMessage(message, index):
+def extractIntFromMessage(message, index):
     value = 0
-    value += (message[index + 0]) << 24
-    value += (message[index + 1]) << 16
-    value += (message[index + 2]) << 8
-    value += (message[index + 3]) << 0
+    value = value + (message[index + 0]) << 24
+    value = value + (message[index + 1]) << 16
+    value = value + (message[index + 2]) << 8
+    value = value + (message[index + 3]) << 0
     return value, index + 4
 
 # A utility function that extracts a string from the specified message.
 def extractStringFromMessage(message, index):
-    length, index = extractNumberFromMessage(message, index)
+    length, index = extractIntFromMessage(message, index)
 
     value = bytearray('', 'ascii')
     for i in range(0, length):
-        value += message[i + index]
+        value.append(message[i + index])
     
     return value, index + length
+
+def test(elements):
+   message = bytearray('', 'ascii') 
+   for element in elements:
+        if type(element) == int:
+            insertIntToMessage(message, int(element))
+        else:
+            insertStringToMessage(message, element)
+   index = 0
+   equalityCount = 0 
+   for element in elements:
+        if type(element) == int:
+           extr, index = extractIntFromMessage(message, index)
+           if int(element) == extr:
+               equalityCount = equalityCount + 1
+        else:
+            extr, index = extractStringFromMessage(message, index)
+            if element == extr.decode():
+                equalityCount = equalityCount + 1 
+   return equalityCount >= len(elements)
+
+def runTests():
+    testcases = [
+        ['Hello World!'], 
+        [3, 5, 4], 
+        ['String!', 3], 
+        ['Rock', 1, 'Paper', 2, 'Scissors', 3]
+        ]
+
+    for i in range(0, len(testcases)):
+        print('Test Case ' + str(i + 1) + ': ' + str(test(testcases[i])))
+
+runTests()

@@ -81,8 +81,8 @@ def promptInvariant():
             break
 
         print('Specify the variable type: ')
-        print('0 - String (e.g. age, name)')
-        print('1 - Integer Range (e.g. 1 3, 11)')
+        print('0 - String (e.g. name)')
+        print('1 - Integer Range (e.g. 1-12, 3-5, 11-20)')
 
         try:
             variableType = int(input('Enter number: '))

@@ -4,7 +4,8 @@ import Candidate
 class CandidateInvariant:
     #Initializes the invariant
     def __init__(self):
-        self.attributeRules = {"attributeName": CandidateInvariantStringRule() }
+        self.attributeRules = {"attributeName": CandidiateInvariantStringRule() }
+        self.attributeRules.pop("attributeName")
 
     #Returns the attribute names in the candidate invariant
     def getAttributeNames(self):
@@ -18,11 +19,13 @@ class CandidateInvariant:
     def addRule(self, attributeName, attributeRule):
         self.attributeRules[attributeName] = attributeRule
     
-    def isObeyedBy(self, )
+    #Checks whether or not the specified candidate obeys the invariant
+    def isObeyedBy(self, candidate):
+        return False
     
 #Represents a rule that represents which type of attribute is required from the attribute with the specified name
 class CandidateInvariantRule:
-    def isObeyedBy(self, attributeValue)
+    def isObeyedBy(self, attributeValue):
         pass
 
 #Represents a rule that requires an attribute to be a string 

@@ -3,6 +3,7 @@ class CandidateSelectionPool:
 
     def __init__(self):
         self.folders = {"first folder", CandidateSelectionPoolFolder() }
+        self.folders.pop("first folder")
 
 
 class CandidateSelectionPoolFolder:
