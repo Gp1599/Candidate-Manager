@@ -4,12 +4,12 @@ import Candidate
 class CandidateInvariant:
     #Initializes the invariant
     def __init__(self):
-        self.attributeRules = {"attributeName": CandidiateInvariantStringRule() }
+        self.attributeRules = {"attributeName": CandidateInvariantStringRule() }
         self.attributeRules.pop("attributeName")
 
     #Returns the attribute names in the candidate invariant
     def getAttributeNames(self):
-        return self.attributeRules.getKeys()
+        return self.attributeRules.keys()
     
     #Returns the int that indicates the required datatype of the attribute with the specified name 
     def getRule(self, attributeName):
@@ -18,10 +18,21 @@ class CandidateInvariant:
     #Adds the specified rule into the candidate invariant
     def addRule(self, attributeName, attributeRule):
         self.attributeRules[attributeName] = attributeRule
+        #print(self.attributeRules[attributeName])
     
     #Checks whether or not the specified candidate obeys the invariant
     def isObeyedBy(self, candidate):
-        return False
+        correctCount = 0
+        for attributeName in candidate.getAttributeNames():
+            try:
+                attributeValue = candidate.getAttribute(attributeName)
+                if self.getRule(attributeName).isObeyedBy(attributeValue):
+                    #print('True')
+                    correctCount = correctCount + 1
+            except KeyError:
+                #print('A Key Error has Ocurred!')
+                return False
+        return correctCount >= len(self.attributeRules)
     
 #Represents a rule that represents which type of attribute is required from the attribute with the specified name
 class CandidateInvariantRule:
@@ -29,10 +40,14 @@ class CandidateInvariantRule:
         pass
 
 #Represents a rule that requires an attribute to be a string 
-class CandidiateInvariantStringRule(CandidateInvariantRule):
+class CandidateInvariantStringRule(CandidateInvariantRule):
+    #Initializes the candidate invariant string rule
+    def __init__(self):
+        pass
+
     #Checks to see if the attribute is a string
     def isObeyedBy(self, attributeValue):
-        return attributeValue is str
+        return True
 
 #Represents a rule that requires an attribute to be an integer and be in the specified range
 class CandidateInvariantIntRangeRule(CandidateInvariantRule):
@@ -43,8 +58,42 @@ class CandidateInvariantIntRangeRule(CandidateInvariantRule):
 
     #Checks to see if the attribute is an int and is in the range specified in the rule's initialization
     def isObeyedBy(self, attributeValue):
-        if not attributeValue is int:
+        try:
+            intAttributeValue = int(attributeValue)
+            return intAttributeValue >= self.min and intAttributeValue <= self.max
+        except ValueError:
             return False
+    
 
-        intAttributeValue = int(attributeValue)
-        return intAttributeValue >= self.min and intAttributeValue <= self.max
+def test(candidateAttributes, invariantAttributes, expectedResult):
+    candidate = Candidate.Candidate('Gabriel')
+    invariant = CandidateInvariant()
+
+    for candidateAttribute in candidateAttributes:
+        name, value = candidateAttribute
+        candidate.setAttribute(name, value)
+
+    for invariantAttribute in invariantAttributes:
+        name, rule = invariantAttribute
+        invariant.addRule(name, rule)
+    
+    return invariant.isObeyedBy(candidate) == expectedResult
+
+def main():
+    testCases = [ ([], [], True), 
+                          ([('Age', '23') ,('Description', 'I am Gabriel!')], [('Age', CandidateInvariantIntRangeRule(0, 100)), ('Description', CandidateInvariantStringRule())], True),
+                          ([('Race', 'Martial'), ('Member ID', '415b')], [('Race', CandidateInvariantStringRule()), ('Member ID', CandidateInvariantIntRangeRule(100, 999))], False),
+                          ([('Grade', 100), ('Alternate Name', 'Ga')], [('Grade', CandidateInvariantIntRangeRule(0, 10)), ('Alternate Name', CandidateInvariantStringRule())], False),
+                          ([('Phone Number', '100-100-1000'), ('Employer Name', 'Wizard inc.')], [('Phone Number', CandidateInvariantStringRule())], False)
+    ]
+
+    i = 1
+    for testCase in testCases:
+        candidateAttributes, invariantAttributes, expectedResult = testCase
+        #print(candidateAttributes)
+        #print(invariantAttributes)
+        #print(expectedResult)
+        print('Test Case ' + str(i) + ': ' + str(test(candidateAttributes, invariantAttributes, expectedResult)))
+        i = i + 1
+
+main()

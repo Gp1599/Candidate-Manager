@@ -4,6 +4,7 @@ class Candidate:
     def __init__(self, name):
         self.name = ''
         self.attributes = { "attributeName": "attributeValue" }
+        self.attributes.pop("attributeName");
     
     #Returns the candidate's name
     def getName(self):
@@ -19,4 +20,4 @@ class Candidate:
 
     #Returns the names of each of the candidate's attributes
     def getAttributeNames(self):
-        return self.attributes.getKeys()
+        return self.attributes.keys()
