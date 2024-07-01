@@ -3,7 +3,7 @@ class CandidateSelectionPool:
 
     #Initializes the Candidate Selection Pool
     def __init__(self):
-        self.folders = {"first folder", CandidateSelectionPoolFolder() }
+        self.folders = {"first folder": CandidateSelectionPoolFolder() }
         self.folders.pop("first folder")
 
     #Adds the candidate from the waitlist to the destination folder
@@ -26,7 +26,7 @@ class CandidateSelectionPool:
 class CandidateSelectionPoolFolder:
 
     #Initializes the candidate selection folder
-    def __init__(self, link):
+    def __init__(self):
         self.candidates = []
         self.responseMessage = ''
     

@@ -6,25 +6,26 @@ def createCandidateMessage(candidate):
     message = bytearray('', 'ascii')
 
     insertIntToMessage(message, 0)
-
-    nameBytes = bytearray(candidate.getName(), 'ascii')
-    insertIntToMessage(message, len(nameBytes))
+    insertStringToMessage(message, candidate.getName())
 
     for attributeName in candidate.getAttributeNames():
         attributeValue = candidate.getAttribute(attributeName)
+        insertStringToMessage(message, attributeName)
         insertStringToMessage(message, attributeValue)
+
     return message
 
 # Creates a candidate read from the specified message.
-def createCandidateFromMessage(message, invariant):
+def createCandidateFromMessage(message):
     index = 4
     
     name, index = extractStringFromMessage(message, index)
     candidate = Candidate.Candidate(name)
 
-    for attributeName in invariant.getAttributeNames():
-        stringValue, index = extractStringFromMessage(message, index)
-        candidate.setAttribute(attributeName, stringValue)
+    while index < len(message):
+        attributeName, index = extractStringFromMessage(message, index)
+        attributeValue, index = extractStringFromMessage(message, index)
+        candidate.setAttribute(attributeName, attributeValue)
 
     return candidate
 
@@ -40,21 +41,17 @@ def createCandidateInvariantMessage(invariant):
 
     for attributeName in invariant.getAttributeNames():
         insertStringToMessage(message, attributeName)
-        insertStringToMessage(message, invariant.getRule(attributeName))
+        insertStringToMessage(message, invariant.getRule(attributeName).display())
     
     return message
 
 # Extracts the candidate invariant from the specified message.
-def createCandidateInvariantFromMessage(message):
-    invariant = CandidateInvariant.CandidateInvariant()
-
+def printCandidateInvariantFromMessage(message):
     index = 0
     while(index < len(message)):
         attributeName, index = extractStringFromMessage(message, index)
         attributeRule, index = extractStringFromMessage(message, index)
-        invariant.addRule(attributeName, attributeRule)
-        
-    return invariant
+        print(attributeName + ": " + attributeRule)
 
 # A utility function that inserts the specified int or float value into the specified message.
 def insertIntToMessage(message, value):
@@ -92,8 +89,9 @@ def extractStringFromMessage(message, index):
     for i in range(0, length):
         value.append(message[i + index])
     
-    return value, index + length
+    return value.decode(), index + length
 
+# Tests the specified test case to see whether it is satisfied
 def test(elements):
    message = bytearray('', 'ascii') 
    for element in elements:
@@ -110,10 +108,11 @@ def test(elements):
                equalityCount = equalityCount + 1
         else:
             extr, index = extractStringFromMessage(message, index)
-            if element == extr.decode():
+            if element == extr:
                 equalityCount = equalityCount + 1 
    return equalityCount >= len(elements)
 
+#Tests the message creation and extraction modules
 def runTests():
     testcases = [
         ['Hello World!'], 

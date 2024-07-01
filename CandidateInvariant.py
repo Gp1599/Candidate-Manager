@@ -40,6 +40,12 @@ class CandidateInvariant:
     
 #Represents a rule that represents which type of attribute is required from the attribute with the specified name
 class CandidateInvariantRule:
+
+    #Returns the string representation of the invariant rule to be printed to the console/CLI
+    def display(self):
+        return 'None'
+    
+    #Return whether or not the specified attribute value satisfies the invariant rule
     def isObeyedBy(self, attributeValue):
         pass
 
@@ -50,6 +56,10 @@ class CandidateInvariantIntRangeRule(CandidateInvariantRule):
         self.min = min
         self.max = max
 
+    #Returns the string representation of the int range rule
+    def display(self):
+        return str(self.min) + " - " + str(self.max)
+
     #Checks to see if the attribute is an int and is in the range specified in the rule's initialization
     def isObeyedBy(self, attributeValue):
         try:
@@ -58,7 +68,7 @@ class CandidateInvariantIntRangeRule(CandidateInvariantRule):
         except ValueError:
             return False
     
-
+#Returns whther or not the specified test case is satisfied
 def test(candidateAttributes, invariantAttributes, expectedResult):
     candidate = Candidate.Candidate('Gabriel')
     invariant = CandidateInvariant()
@@ -73,6 +83,7 @@ def test(candidateAttributes, invariantAttributes, expectedResult):
     
     return invariant.isObeyedBy(candidate) == expectedResult
 
+#Tests the candidate invariant modules
 def main():
     testCases = [ ([], [], True), 
                           ([('Age', '23') ,('Description', 'I am Gabriel!')], [('Age', CandidateInvariantIntRangeRule(0, 100)), ('Description', None)], True),

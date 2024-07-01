@@ -25,18 +25,27 @@ def setNewAttribute():
     candidate.setAttribute(attributeName, attributeValue)
 
 # Send the candidate invariant request to the host and recieve and print the requested invariant
-def requestCandidateInvariant(clientSocket):
+def requestCandidateInvariant(clientSocket, ipAddress):
+    try:
+        clientSocket.connect(ipAddress, CandidateManagerPort.port)
+    except ConnectionError:
+        print('Error: Cannot find a host with the ip address of ' + ipAddress + '! try again next time.')
+        return
+
     requestMessage = CandidateManagerMessages.createCandidateInvariantRequestMessage()
     clientSocket.send(requestMessage)
 
     response, responseIPAddress = clientSocket.recv(1024)
-    invariant = CandidateManagerMessages.createCandidateInvariantFromMessage(response)
-    
-    for attributeName in invariant.getAttributeNames():
-        print(attributeName + ": " + invariant[attributeName])
+    CandidateManagerMessages.printCandidateInvariantFromMessage(response)
 
 # Send candidate information to the host and wait for your determined status
-def sendCandidate(clientSocket):
+def sendCandidate(clientSocket, ipAddress):
+    try:
+        clientSocket.connect(ipAddress, CandidateManagerPort.port)
+    except ConnectionError:
+        print('Error: Cannot find a host with the ip address of ' + ipAddress + '! try again next time.')
+        return
+    
     message = CandidateManagerMessages.createCandidateMessage(candidate)
     clientSocket.send(message)
     
@@ -63,11 +72,6 @@ def main():
     #Run a client loop
     ipAddress = input('Enter the host\'s IP Address: ')
     clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    try:
-        clientSocket.connect(ipAddress, CandidateManagerPort.port)
-    except ConnectionError:
-        print('Error: Cannot find a host with the ip address of ' + ipAddress + '! try again next time.')
-        return
 
     while True:
         option = getMainMenuOption()
@@ -76,13 +80,15 @@ def main():
             case '0':
                 setNewAttribute();
             case '1':
-                requestCandidateInvariant(clientSocket)
+                requestCandidateInvariant(clientSocket, ipAddress)
             case '2':
-                sendCandidate()
+                sendCandidate(clientSocket, ipAddress)
                 break
             case 'q':
                 print('Thank you for using the Candidate Manager Client, bye!')
                 break
         
     clientSocket.close()
+
+main()
         

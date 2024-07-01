@@ -3,11 +3,11 @@ import socket
 import threading
 
 import CandidateManagerPort
+import CandidateManagerMessages
 
 import Candidate
 import CandidateInvariant
 import CandidateSelectionPool
-
 
 #Represent the organization of received candidates
 accepted_candidates = CandidateSelectionPool.CandidateSelectionPool()
@@ -28,9 +28,24 @@ def recieve_candidates():
         accepted_socket, socketAddress = host_socket.accept()
         packet, clientAddr = accepted_socket.recv(1024)
 
-        #Check to see if the received candidate obeys the host's candidate invariant. If it does accept it. Otherwise, reject it.
+        processMessage(accepted_socket, packet)
+        accepted_socket.close()        
     
     host_socket.close()
+
+#Processes the received message
+def processMessage(socket, message):
+    messagetype = CandidateManagerMessages.extractIntFromMessage(message, 0)
+    match messagetype:
+        case 0:
+            #Check to see if the received candidate obeys the host's candidate invariant. If it does, accept it. Otherwise, reject it.
+            candidate = CandidateManagerMessages.createCandidateFromMessage(message) 
+            if candidate_invariant.isObeyedBy(candidate):
+                waitlisted_candidates.append(candidate)
+        case 1:
+            invariantMessage = CandidateManagerMessages.createCandidateInvariantMessage(candidate_invariant)
+            socket.send(invariantMessage)
+
 
 #The main program to run the candidate manager host
 def main():
@@ -45,7 +60,7 @@ def main():
     promptInvariant()
 
     #Run the candidate manager host loop
-    hostThread = threading.Thread('Candidate Host Thread', recieve_candidates)
+    hostThread = threading.Thread(None, recieve_candidates, 'Candidate Host Thread')
     hostThread.start()
 
     while running:
@@ -73,9 +88,10 @@ def promptInvariant():
     global candidate_invariant
     global candidate_invariant_done
 
+    print()
     print('Create a candidate invariant:')
     while True:
-        variableName = input('Enter variable name: ')
+        variableName = input('Enter variable name(enter _quit to finish the invariant): ')
         if(variableName == '_quit'):
             candidate_invariant_done = True
             break
