@@ -4,7 +4,7 @@ import Candidate
 class CandidateInvariant:
     #Initializes the invariant
     def __init__(self):
-        self.attributeRules = {"attributeName": CandidateInvariantStringRule() }
+        self.attributeRules = {"attributeName": None }
         self.attributeRules.pop("attributeName")
 
     #Returns the attribute names in the candidate invariant
@@ -26,8 +26,12 @@ class CandidateInvariant:
         for attributeName in candidate.getAttributeNames():
             try:
                 attributeValue = candidate.getAttribute(attributeName)
-                if self.getRule(attributeName).isObeyedBy(attributeValue):
-                    #print('True')
+                rule = self.getRule(attributeName)
+                if not rule == None:
+                    if rule.isObeyedBy(attributeValue):
+                        #print('True')
+                        correctCount = correctCount + 1
+                else:
                     correctCount = correctCount + 1
             except KeyError:
                 #print('A Key Error has Ocurred!')
@@ -38,16 +42,6 @@ class CandidateInvariant:
 class CandidateInvariantRule:
     def isObeyedBy(self, attributeValue):
         pass
-
-#Represents a rule that requires an attribute to be a string 
-class CandidateInvariantStringRule(CandidateInvariantRule):
-    #Initializes the candidate invariant string rule
-    def __init__(self):
-        pass
-
-    #Checks to see if the attribute is a string
-    def isObeyedBy(self, attributeValue):
-        return True
 
 #Represents a rule that requires an attribute to be an integer and be in the specified range
 class CandidateInvariantIntRangeRule(CandidateInvariantRule):
@@ -81,10 +75,10 @@ def test(candidateAttributes, invariantAttributes, expectedResult):
 
 def main():
     testCases = [ ([], [], True), 
-                          ([('Age', '23') ,('Description', 'I am Gabriel!')], [('Age', CandidateInvariantIntRangeRule(0, 100)), ('Description', CandidateInvariantStringRule())], True),
-                          ([('Race', 'Martial'), ('Member ID', '415b')], [('Race', CandidateInvariantStringRule()), ('Member ID', CandidateInvariantIntRangeRule(100, 999))], False),
-                          ([('Grade', 100), ('Alternate Name', 'Ga')], [('Grade', CandidateInvariantIntRangeRule(0, 10)), ('Alternate Name', CandidateInvariantStringRule())], False),
-                          ([('Phone Number', '100-100-1000'), ('Employer Name', 'Wizard inc.')], [('Phone Number', CandidateInvariantStringRule())], False)
+                          ([('Age', '23') ,('Description', 'I am Gabriel!')], [('Age', CandidateInvariantIntRangeRule(0, 100)), ('Description', None)], True),
+                          ([('Race', 'Martial'), ('Member ID', '415b')], [('Race', None), ('Member ID', CandidateInvariantIntRangeRule(100, 999))], False),
+                          ([('Grade', 100), ('Alternate Name', 'Ga')], [('Grade', CandidateInvariantIntRangeRule(0, 10)), ('Alternate Name', None)], False),
+                          ([('Phone Number', '100-100-1000'), ('Employer Name', 'Wizard inc.')], [('Phone Number', None)], False)
     ]
 
     i = 1
