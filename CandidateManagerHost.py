@@ -24,6 +24,8 @@ running = True
 def recieve_candidates():
     #Initalize the host socket
     host_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    host_socket.bind(('', CandidateManagerPort.port))
+    
     while running:
         accepted_socket, socketAddress = host_socket.accept()
         packet, clientAddr = accepted_socket.recv(1024)

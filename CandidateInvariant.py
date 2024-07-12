@@ -70,7 +70,7 @@ class CandidateInvariantIntRangeRule(CandidateInvariantRule):
     
 #Returns whther or not the specified test case is satisfied
 def test(candidateAttributes, invariantAttributes, expectedResult):
-    candidate = Candidate.Candidate('Gabriel')
+    candidate = Candidate.Candidate('Gabriel', '')
     invariant = CandidateInvariant()
 
     for candidateAttribute in candidateAttributes:
