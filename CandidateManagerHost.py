@@ -28,24 +28,23 @@ def recieve_candidates():
         accepted_socket, socketAddress = host_socket.accept()
         packet, clientAddr = accepted_socket.recv(1024)
 
-        processMessage(accepted_socket, packet)
+        processMessage(accepted_socket, packet, clientAddr)
         accepted_socket.close()        
     
     host_socket.close()
 
 #Processes the received message
-def processMessage(socket, message):
+def processMessage(socket, message, ipAddress):
     messagetype = CandidateManagerMessages.extractIntFromMessage(message, 0)
     match messagetype:
         case 0:
             #Check to see if the received candidate obeys the host's candidate invariant. If it does, accept it. Otherwise, reject it.
-            candidate = CandidateManagerMessages.createCandidateFromMessage(message) 
+            candidate = CandidateManagerMessages.createCandidateFromMessage(message, ipAddress) 
             if candidate_invariant.isObeyedBy(candidate):
                 waitlisted_candidates.append(candidate)
         case 1:
             invariantMessage = CandidateManagerMessages.createCandidateInvariantMessage(candidate_invariant)
             socket.send(invariantMessage)
-
 
 #The main program to run the candidate manager host
 def main():
@@ -68,21 +67,6 @@ def main():
     
     #Print the closing  message
     print('Thank you. Goodbye!')
-
-#Represents the set of folders that will be used by the host to contain and process accepted candidates
-class CandidateSelection:
-    def __init__(self, folderNames):
-        self.folders = {}
-        for folderName in folderNames:
-            self.folders[folderName] = []
-    
-    #Returns the candidate selection's folders
-    def getFolders(self):
-        pass
-
-    #Moves the candidate at the source folder's index to the destination folder
-    def moveCandidate(self, candidateName, srcFolder, destFolder):
-        pass
 
 def promptInvariant():
     global candidate_invariant
@@ -111,7 +95,7 @@ def promptInvariant():
         else:
             match variableType:
                 case 0:
-                    candidate_invariant.addRule(variableName, CandidateInvariant.CandidateInvariantStringRule())
+                    candidate_invariant.addRule(variableName, CandidateInvariant.CandidateInvariantRule())
                 case 1:
                     try:
                         min = int(input('Enter minimum value: '))

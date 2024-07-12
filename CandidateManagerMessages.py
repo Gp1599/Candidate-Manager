@@ -16,11 +16,11 @@ def createCandidateMessage(candidate):
     return message
 
 # Creates a candidate read from the specified message.
-def createCandidateFromMessage(message):
+def createCandidateFromMessage(message, ipAddress):
     index = 4
     
     name, index = extractStringFromMessage(message, index)
-    candidate = Candidate.Candidate(name)
+    candidate = Candidate.Candidate(name, ipAddress)
 
     while index < len(message):
         attributeName, index = extractStringFromMessage(message, index)

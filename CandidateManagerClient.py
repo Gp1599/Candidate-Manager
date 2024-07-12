@@ -6,7 +6,8 @@ import CandidateManagerPort
 import CandidateStatus
 import CandidateManagerMessages
 
-candidate = None;
+candidate = None
+waitMode = False
 
 # Prints the main menu options
 def getMainMenuOption():
@@ -49,25 +50,36 @@ def sendCandidate(clientSocket, ipAddress):
     message = CandidateManagerMessages.createCandidateMessage(candidate)
     clientSocket.send(message)
     
-    print('Candidate info sent, wait for the status response...')
-    statusResponse, responseIP = clientSocket.recv(1024)
+    if(waitMode):
+        print('Candidate info sent, wait for the status response...')
+        statusResponse, responseIP = clientSocket.recv(1024)
     
-    status, index = CandidateManagerMessages.extractNumberFromMessage(statusResponse, 0)
-    match status:
-        case CandidateStatus.accepted:
-            print('Congradulations, ' + candidate.getName() + '! You have been accepted!')
-        case CandidateStatus.rejected:
-            print('Sorry + ' + candidate.getName() + '! You have been rejected!')
+        status, index = CandidateManagerMessages.extractNumberFromMessage(statusResponse, 0)
+        match status:
+            case CandidateStatus.accepted:
+                print('Congradulations, ' + candidate.getName() + '! You have been accepted!')
+            case CandidateStatus.rejected:
+                print('Sorry + ' + candidate.getName() + '! You have been rejected!')
+
+    clientSocket.close()
 
 #Main program for the candidate manager client
 def main():
     global candidate
+    global waitMode
+
+    try:
+        waitMode = bool(sys.argv[1])
+    except Exception:
+        print('Error: Run the program by typing the following: python3 CandidateManagerClient.py <whether the client should wait for the application response (boolean)>')
+        return
+
     #Prompt the user to enter his/her name
     print('Welcome to the Candidate Manager Client!')
     name = input('Enter your name: ')
     
     #Initialize Candidate
-    candidate = Candidate.Candidate(name)
+    candidate = Candidate.Candidate(name, '')
 
     #Run a client loop
     ipAddress = input('Enter the host\'s IP Address: ')
