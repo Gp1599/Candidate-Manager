@@ -125,5 +125,4 @@ def mainMenu():
     if(option == 'q'):
         running = False
 
-
 main() #Run the host main program
