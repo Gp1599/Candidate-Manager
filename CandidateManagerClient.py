@@ -28,7 +28,7 @@ def setNewAttribute():
 # Send the candidate invariant request to the host and recieve and print the requested invariant
 def requestCandidateInvariant(clientSocket, ipAddress):
     try:
-        clientSocket.connect(ipAddress, CandidateManagerPort.port)
+        clientSocket.connect((ipAddress, CandidateManagerPort.port))
     except ConnectionError:
         print('Error: Cannot find a host with the ip address of ' + ipAddress + '! try again next time.')
         return
@@ -42,7 +42,7 @@ def requestCandidateInvariant(clientSocket, ipAddress):
 # Send candidate information to the host and wait for your determined status
 def sendCandidate(clientSocket, ipAddress):
     try:
-        clientSocket.connect(ipAddress, CandidateManagerPort.port)
+        clientSocket.connect((ipAddress, CandidateManagerPort.port))
     except ConnectionError:
         print('Error: Cannot find a host with the ip address of ' + ipAddress + '! try again next time.')
         return
