@@ -52,9 +52,9 @@ def sendCandidate(clientSocket, ipAddress):
     
     if(waitMode):
         print('Candidate info sent, wait for the status response...')
-        statusResponse, responseIP = clientSocket.recv(1024)
+        statusResponse = clientSocket.recv(1024)
     
-        status, index = CandidateManagerMessages.extractNumberFromMessage(statusResponse, 0)
+        status, index = CandidateManagerMessages.extractIntFromMessage(statusResponse, index)
         match status:
             case CandidateStatus.accepted:
                 print('Congradulations, ' + candidate.getName() + '! You have been accepted!')
@@ -70,6 +70,7 @@ def main():
 
     try:
         waitMode = bool(sys.argv[1])
+        print(waitMode)
     except Exception:
         print('Error: Run the program by typing the following: python3 CandidateManagerClient.py <whether the client should wait for the application response (boolean)>')
         return

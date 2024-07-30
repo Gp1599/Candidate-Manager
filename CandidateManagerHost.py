@@ -27,21 +27,22 @@ def recieve_candidates():
     host_socket.bind(('', CandidateManagerPort.port))
     
     while running:
+        host_socket.listen()
         accepted_socket, socketAddress = host_socket.accept()
-        packet, clientAddr = accepted_socket.recv(1024)
+        packet = accepted_socket.recv(1024)
 
-        processMessage(accepted_socket, packet, clientAddr)
+        processMessage(accepted_socket, packet)
         accepted_socket.close()        
     
     host_socket.close()
 
 #Processes the received message
-def processMessage(socket, message, ipAddress):
+def processMessage(socket, message):
     messagetype = CandidateManagerMessages.extractIntFromMessage(message, 0)
     match messagetype:
         case 0:
             #Check to see if the received candidate obeys the host's candidate invariant. If it does, accept it. Otherwise, reject it.
-            candidate = CandidateManagerMessages.createCandidateFromMessage(message, ipAddress) 
+            candidate = CandidateManagerMessages.createCandidateFromMessage(message, '') #FIXME: Remove the IP Address Parameter Later .
             if candidate_invariant.isObeyedBy(candidate):
                 waitlisted_candidates.append(candidate)
         case 1:
