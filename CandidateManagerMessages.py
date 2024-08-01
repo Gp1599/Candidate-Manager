@@ -16,9 +16,7 @@ def createCandidateMessage(candidate):
     return message
 
 # Creates a candidate read from the specified message.
-def createCandidateFromMessage(message, ipAddress):
-    index = 4
-    
+def createCandidateFromMessage(message, ipAddress, index):
     name, index = extractStringFromMessage(message, index)
     candidate = Candidate.Candidate(name, ipAddress)
 
@@ -67,7 +65,7 @@ def insertIntToMessage(message, value):
 
 # A utility function that inserts the specified string value into the specified message.
 def insertStringToMessage(message, value):
-    stringBytes = bytearray(value, 'ascii')
+    stringBytes = value.encode('ascii')
     insertIntToMessage(message, len(stringBytes))
     for byte in stringBytes:
         message.append(byte)
