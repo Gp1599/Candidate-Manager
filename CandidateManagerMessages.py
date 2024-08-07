@@ -111,15 +111,15 @@ def test(elements):
    return equalityCount >= len(elements)
 
 #Tests the message creation and extraction modules
-def runTests():
-    testcases = [
-        ['Hello World!'], 
-        [3, 5, 4], 
-        ['String!', 3], 
-        ['Rock', 1, 'Paper', 2, 'Scissors', 3]
-        ]
-
-    for i in range(0, len(testcases)):
-        print('Test Case ' + str(i + 1) + ': ' + str(test(testcases[i])))
-
-runTests()
+#def runTests():
+#    testcases = [
+#        ['Hello World!'], 
+#        [3, 5, 4], 
+#        ['String!', 3], 
+#        ['Rock', 1, 'Paper', 2, 'Scissors', 3]
+#        ]
+#
+#    for i in range(0, len(testcases)):
+#        print('Test Case ' + str(i + 1) + ': ' + str(test(testcases[i])))
+#
+#runTests()
