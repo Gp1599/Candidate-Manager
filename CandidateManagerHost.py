@@ -80,8 +80,8 @@ def promptInvariant():
     print()
     print('Create a candidate invariant:')
     while not candidate_invariant_done:
-        print('0- Add invariant attribute')
-        print('q- Finish invariant')
+        print('0 - Add invariant attribute')
+        print('q - Finish invariant')
         option = input('Please select option: ')
 
         match option:
@@ -138,11 +138,14 @@ def mainMenu():
             running = False
 
 def viewWaitlistedCandidates():
-    i = 0
-    print('Waitlisted Candidate #\tName')
-    for candidate in waitlisted_candidates:
-        print(str(i) + '-\t' + candidate.getName())
-        i = i + 1
+    if len(waitlisted_candidates) > 0:
+        i = 0
+        print('Waitlisted Candidate #\tName')
+        for candidate in waitlisted_candidates:
+            print(str(i) + '-\t' + candidate.getName())
+            i = i + 1
+    else:
+        print('You currently don\'t have any waitlisted candidates')
 
 def viewWaitlistedCandidateInformation():
     try:
