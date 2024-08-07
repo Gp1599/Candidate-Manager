@@ -2,7 +2,7 @@
 class Candidate:
     #Initializes the candidate with the specified name
     def __init__(self, name, ipAddress):
-        self.name = ''
+        self.name = name
         self.ipAddress = ipAddress
         self.attributes = { "attributeName": "attributeValue" }
         self.attributes.pop("attributeName");

@@ -30,10 +30,10 @@ def recieve_candidates():
         host_socket.listen()
         accepted_socket, socketAddress = host_socket.accept()
         packet = accepted_socket.recv(1024)
-        print(packet)
+        #print(packet)
 
         processMessage(accepted_socket, packet)
-        accepted_socket.close()        
+        accepted_socket.close()       
     
     host_socket.close()
 
@@ -79,35 +79,39 @@ def promptInvariant():
 
     print()
     print('Create a candidate invariant:')
-    while True:
-        variableName = input('Enter variable name(enter _quit to finish the invariant): ')
-        if(variableName == '_quit'):
-            candidate_invariant_done = True
-            break
+    while not candidate_invariant_done:
+        print('0- Add invariant attribute')
+        print('q- Finish invariant')
+        option = input('Please select option: ')
 
-        print('Specify the variable type: ')
-        print('0 - String (e.g. name)')
-        print('1 - Integer Range (e.g. 1-12, 3-5, 11-20)')
+        match option:
+            case '0':
+                variableName = input('Enter attribute name: ')
+                print('Specify the variable type: ')
+                print('0 - String (e.g. name)')
+                print('1 - Integer Range (e.g. 1-12, 3-5, 11-20)')
 
-        try:
-            variableType = int(input('Enter number: '))
-        except TypeError:
-            print('Error: invalid value (must be an integer)!')
-            return
+                try:
+                    variableType = int(input('Enter number: '))
+                except TypeError:
+                    print('Error: invalid value (must be an integer)!')
+                    return
         
-        if variableType < 0 or variableType > 1:
-            print('Error: Invalid Value (must be between 0-2)!')
-        else:
-            match variableType:
-                case 0:
-                    candidate_invariant.addRule(variableName, CandidateInvariant.CandidateInvariantRule())
-                case 1:
-                    try:
-                        min = int(input('Enter minimum value: '))
-                        max = int(input('Enter maximum value: '))
-                        candidate_invariant.addRule(variableName, CandidateInvariant.CandidateInvariantIntRangeRule(min, max))
-                    except TypeError:
-                        print('Error: invalid value; must be an integer')
+                if variableType < 0 or variableType > 1:
+                    print('Error: Invalid Value (must be between 0-2)!')
+                else:
+                    match variableType:
+                        case 0:
+                            candidate_invariant.addRule(variableName, CandidateInvariant.CandidateInvariantRule())
+                        case 1:
+                            try:
+                                min = int(input('Enter minimum value: '))
+                                max = int(input('Enter maximum value: '))
+                                candidate_invariant.addRule(variableName, CandidateInvariant.CandidateInvariantIntRangeRule(min, max))
+                            except TypeError:
+                                print('Error: invalid value; must be an integer')
+            case 'q':
+                candidate_invariant_done = True
         
 
 #The main menu loop to manage candidates
