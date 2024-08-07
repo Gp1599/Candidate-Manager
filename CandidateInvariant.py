@@ -69,36 +69,36 @@ class CandidateInvariantIntRangeRule(CandidateInvariantRule):
             return False
     
 #Returns whther or not the specified test case is satisfied
-#def test(candidateAttributes, invariantAttributes, expectedResult):
-#    candidate = Candidate.Candidate('Gabriel', '')
-#    invariant = CandidateInvariant()
-#
-#    for candidateAttribute in candidateAttributes:
-#        name, value = candidateAttribute
-#        candidate.setAttribute(name, value)
-#
-#    for invariantAttribute in invariantAttributes:
-#        name, rule = invariantAttribute
-#        invariant.addRule(name, rule)
-#    
-#    return invariant.isObeyedBy(candidate) == expectedResult
-#
+def test(candidateAttributes, invariantAttributes, expectedResult):
+    candidate = Candidate.Candidate('Gabriel', '')
+    invariant = CandidateInvariant()
+
+    for candidateAttribute in candidateAttributes:
+        name, value = candidateAttribute
+        candidate.setAttribute(name, value)
+
+    for invariantAttribute in invariantAttributes:
+        name, rule = invariantAttribute
+        invariant.addRule(name, rule)
+    
+    return invariant.isObeyedBy(candidate) == expectedResult
+
 #Tests the candidate invariant modules
-#def main():
-#    testCases = [ ([], [], True), 
-#                          ([('Age', '23') ,('Description', 'I am Gabriel!')], [('Age', CandidateInvariantIntRangeRule(0, 100)), ('Description', None)], True),
-#                          ([('Race', 'Martial'), ('Member ID', '415b')], [('Race', None), ('Member ID', CandidateInvariantIntRangeRule(100, 999))], False),
-#                          ([('Grade', 100), ('Alternate Name', 'Ga')], [('Grade', CandidateInvariantIntRangeRule(0, 10)), ('Alternate Name', None)], False),
-#                          ([('Phone Number', '100-100-1000'), ('Employer Name', 'Wizard inc.')], [('Phone Number', None)], False)
-#    ]
-#
-#    i = 1
-#    for testCase in testCases:
-#        candidateAttributes, invariantAttributes, expectedResult = testCase
-#        #print(candidateAttributes)
-#        #print(invariantAttributes)
-#        #print(expectedResult)
-#        print('Test Case ' + str(i) + ': ' + str(test(candidateAttributes, invariantAttributes, expectedResult)))
-#        i = i + 1
-#
-#main()
+def runTests():
+    print('Testing Candidate Invariant:')
+    testCases = [ ([], [], True), 
+                          ([('Age', '23') ,('Description', 'I am Gabriel!')], [('Age', CandidateInvariantIntRangeRule(0, 100)), ('Description', None)], True),
+                          ([('Race', 'Martial'), ('Member ID', '415b')], [('Race', None), ('Member ID', CandidateInvariantIntRangeRule(100, 999))], False),
+                          ([('Grade', 100), ('Alternate Name', 'Ga')], [('Grade', CandidateInvariantIntRangeRule(0, 10)), ('Alternate Name', None)], False),
+                          ([('Phone Number', '100-100-1000'), ('Employer Name', 'Wizard inc.')], [('Phone Number', None)], False)
+    ]
+
+    i = 1
+    for testCase in testCases:
+        candidateAttributes, invariantAttributes, expectedResult = testCase
+        #print(candidateAttributes)
+        #print(invariantAttributes)
+        #print(expectedResult)
+        print('Test Case ' + str(i) + ': ' + str(test(candidateAttributes, invariantAttributes, expectedResult)))
+        i = i + 1
+    print()

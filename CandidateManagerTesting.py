@@ -1,0 +1,5 @@
+import CandidateInvariant
+import CandidateManagerMessages
+
+CandidateInvariant.runTests()
+CandidateManagerMessages.runTests()
