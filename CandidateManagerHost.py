@@ -73,6 +73,7 @@ def main():
     #Print the closing  message
     print('Thank you. Goodbye!')
 
+#A stage of the host program that prompts the user to create the candidate invariant that will be used throughout the stage of processing received candidates.
 def promptInvariant():
     global candidate_invariant
     global candidate_invariant_done
@@ -114,7 +115,7 @@ def promptInvariant():
                 candidate_invariant_done = True
         
 
-#The main menu loop to manage candidates
+#The main menu loop to manage candidates.
 def mainMenu():
     #Use global variables
     global running
@@ -123,6 +124,13 @@ def mainMenu():
     print('Main Menu:')
     print('0 - View Waitlisted Candidates')
     print('1 - View Waitlisted Candidate Information')
+    print('2 - Add Selection Folder')
+    print('3 - Remove Selection Folder')
+    print('4 - Move Candidate From Waitlist to Selection Folder')
+    print('5 - Move Candidate From Selection Folder to Selection Folder')
+    print('6 - Move Candidate From Selection Folder to Waitlist')
+    print('7 - Display Selection Folder')
+    print('8 - Display Selection Pool')
     print('q - Quit')
 
     #Prompt the user with the option
@@ -131,23 +139,40 @@ def mainMenu():
     #Process the specified option
     match option:
         case '0':
-            viewWaitlistedCandidates()
+            viewWaitlistedCandidatesOption()
         case '1':
-            viewWaitlistedCandidateInformation()
+            viewWaitlistedCandidateInformationOption()
+        case '2':
+            addFolderOption()
+        case '3':
+            removeFolderOption()
+        case '4':
+            moveCandidateFromWaitlistToSelectionOption()
+        case '5':
+            moveCandidateFromSelectionToSelectionOption()
+        case '6':
+            moveCandidateFromSelectionToWaitlistOption()
+        case '7':
+            displaySelectionFolderOption()
+        case '8':
+            displaySelectionOption()
         case 'q':
             running = False
 
-def viewWaitlistedCandidates():
+#Prints a table that has columns containing each candidate's ID number and name.
+def viewWaitlistedCandidatesOption():
     if len(waitlisted_candidates) > 0:
         i = 0
         print('Waitlisted Candidate #\tName')
         for candidate in waitlisted_candidates:
-            print(str(i) + '-\t' + candidate.getName())
+            print(str(i) + '-\t\t\t' + candidate.getName())
             i = i + 1
     else:
         print('You currently don\'t have any waitlisted candidates')
+    print()
 
-def viewWaitlistedCandidateInformation():
+#Prompts the user for the condidate's ID number and prints information about that candidate.
+def viewWaitlistedCandidateInformationOption():
     try:
         waitlistedCandidateNumber = int(input('Enter waitlisted candidate number:'))
         candidate = waitlisted_candidates[waitlistedCandidateNumber];
@@ -160,6 +185,80 @@ def viewWaitlistedCandidateInformation():
         print('Error: The waitlisted candidate number must be an integer')
     except IndexError:
         print('Error: Cannot find waitlisted candidate with an out of bounds number')
+    print()
     
+#Prompts the user for the name of the new folder and adds the new folder with that name.
+def addFolderOption():
+    folderName = input('Enter folder name: ')
+    accepted_candidates.addFolder(folderName)
+    print()
+
+#Prompts the user for the name of the folder that he or she wants to delete and deletes that folder if it exists.
+def removeFolderOption():
+    folderName = input('Enter folder name: ')
+    try:
+        accepted_candidates.removeFolder(folderName)
+    except:
+        print('Error: Cannot find selection folder named ' + folderName)
+    print()
+
+#Promtps the user for the ID number of a candidate in the waitlist and the name of the destination folder and moves the candidate with that number into that folder.
+def moveCandidateFromWaitlistToSelectionOption():
+    folderName = ''
+    try:
+        candidateNumber = int(input('Enter candidate number: '))
+        folderName = input('Enter folder name: ')
+        accepted_candidates.addCandidate(folderName, waitlisted_candidates, candidateNumber)
+    except TypeError:
+        print('Error: invalid input for a candidate number (must be an integer greater than or equal to 0)')
+    except IndexError:
+        print('Error: cannot find a candidate with the number that is out of bounds')
+    except KeyError:
+        print('Error: cannot find a selection folder named ' + folderName)
+    print()
+
+#Prompts the user for the name of the source folder, the ID number of the candidate in the waitlist, and the name of the destination folder and moves the candidate with that ID number from the source folder to the destination folder.
+def moveCandidateFromSelectionToSelectionOption():
+    try:
+        srcFolderName = input('Enter source folder name: ')
+        candidateNumber = int(input('Enter candidate number: '))
+        destFolderName = input('Enter folder name: ')
+        accepted_candidates.swap(srcFolderName, destFolderName, candidateNumber)
+    except TypeError:
+        print('Error: invalid input for a candidate number (must be an integer greater than or equal to 0)')
+    except IndexError:
+        print('Error: cannot find a candidate with the number that is out of bounds')
+    except KeyError:
+        print('Error: cannot find a selection folder')
+    print()
+
+#Prompts the user for the name of the source folder and the ID number of the candidate in that folder and moves the candidate with that ID number back into the waitlist
+def moveCandidateFromSelectionToWaitlistOption():
+    folderName = ''
+    try:
+        folderName = input('Enter folder name: ')
+        candidateNumber = int(input('Enter candidate number: '))
+        accepted_candidates.removeCandidate(folderName, waitlisted_candidates, candidateNumber)
+    except TypeError:
+        print('Error: invalid input for a candidate number (must be an integer greater than or equal to 0)')
+    except IndexError:
+        print('Error: cannot find a candidate with the number that is out of bounds')
+    except KeyError:
+        print('Error: cannot find a selection folder named ' + folderName)
+    print()
+
+#Prompts the user for the name of the selection folder that he or shet wants the program to display information about and displays the contents of that folder.
+def displaySelectionFolderOption():
+    folderName = input('Enter folder name: ')
+    try:
+        accepted_candidates.displayFolder(folderName)
+    except KeyError:
+        print('Error: cannot find a selection folder named ' + folderName)
+    print()
+
+#Displays the contents of the selection pool.
+def displaySelectionOption():
+    accepted_candidates.display()
+    print()
 
 main() #Run the host main program
