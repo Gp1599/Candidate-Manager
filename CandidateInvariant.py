@@ -47,7 +47,7 @@ class CandidateInvariantRule:
     
     #Return whether or not the specified attribute value satisfies the invariant rule
     def isObeyedBy(self, attributeValue):
-        pass
+        return True
 
 #Represents a rule that requires an attribute to be an integer and be in the specified range
 class CandidateInvariantIntRangeRule(CandidateInvariantRule):

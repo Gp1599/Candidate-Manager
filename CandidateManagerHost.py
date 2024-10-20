@@ -11,7 +11,8 @@ import CandidateSelectionPool
 
 #Represent the organization of received candidates
 accepted_candidates = CandidateSelectionPool.CandidateSelectionPool()
-waitlisted_candidates = []
+waitlisted_candidates = {}
+id = 0
 
 #Represents the candidate invariant that the host needs all candidates to satisfy
 candidate_invariant = CandidateInvariant.CandidateInvariant()
@@ -39,6 +40,8 @@ def recieve_candidates():
 
 #Processes the received message
 def processMessage(socket, message):
+    global id
+
     index = 0
     messagetype, index = CandidateManagerMessages.extractIntFromMessage(message, index)
     match messagetype:
@@ -46,7 +49,8 @@ def processMessage(socket, message):
             #Check to see if the received candidate obeys the host's candidate invariant. If it does, accept it. Otherwise, reject it.
             candidate = CandidateManagerMessages.createCandidateFromMessage(message, '', index) #FIXME: Remove the IP Address Parameter Later .
             if candidate_invariant.isObeyedBy(candidate):
-                waitlisted_candidates.append(candidate)
+                waitlisted_candidates[id] = candidate
+                id = id + 1
         case 1:
             invariantMessage = CandidateManagerMessages.createCandidateInvariantMessage(candidate_invariant)
             socket.send(invariantMessage)
@@ -162,11 +166,9 @@ def mainMenu():
 #Prints a table that has columns containing each candidate's ID number and name.
 def viewWaitlistedCandidatesOption():
     if len(waitlisted_candidates) > 0:
-        i = 0
-        print('Waitlisted Candidate #\tName')
-        for candidate in waitlisted_candidates:
-            print(str(i) + '-\t\t\t' + candidate.getName())
-            i = i + 1
+        print('Candidate ID #\t\tName')
+        for candidateID in waitlisted_candidates.keys():
+            print(str(candidateID) + '-\t\t\t' + waitlisted_candidates[candidateID].getName())
     else:
         print('You currently don\'t have any waitlisted candidates')
     print()
@@ -174,15 +176,15 @@ def viewWaitlistedCandidatesOption():
 #Prompts the user for the condidate's ID number and prints information about that candidate.
 def viewWaitlistedCandidateInformationOption():
     try:
-        waitlistedCandidateNumber = int(input('Enter waitlisted candidate number:'))
-        candidate = waitlisted_candidates[waitlistedCandidateNumber];
+        candidateID = int(input('Enter candidate ID:'))
+        candidate = waitlisted_candidates[candidateID];
     
         print(candidate.getName())
         for attributeName in candidate.getAttributeNames():
             print(attributeName + ':\t' + candidate.getAttribute(attributeName))
 
     except TypeError:
-        print('Error: The waitlisted candidate number must be an integer')
+        print('Error: The candidate ID must be an integer')
     except IndexError:
         print('Error: Cannot find waitlisted candidate with an out of bounds number')
     print()
@@ -206,11 +208,11 @@ def removeFolderOption():
 def moveCandidateFromWaitlistToSelectionOption():
     folderName = ''
     try:
-        candidateNumber = int(input('Enter candidate number: '))
+        candidateID = int(input('Enter candidate ID: '))
         folderName = input('Enter folder name: ')
-        accepted_candidates.addCandidate(folderName, waitlisted_candidates, candidateNumber)
+        accepted_candidates.addCandidate(folderName, waitlisted_candidates, candidateID)
     except TypeError:
-        print('Error: invalid input for a candidate number (must be an integer greater than or equal to 0)')
+        print('Error: invalid input for a candidate ID number (must be an integer greater than or equal to 0)')
     except IndexError:
         print('Error: cannot find a candidate with the number that is out of bounds')
     except KeyError:
@@ -221,11 +223,11 @@ def moveCandidateFromWaitlistToSelectionOption():
 def moveCandidateFromSelectionToSelectionOption():
     try:
         srcFolderName = input('Enter source folder name: ')
-        candidateNumber = int(input('Enter candidate number: '))
+        candidateID = int(input('Enter candidate ID: '))
         destFolderName = input('Enter folder name: ')
-        accepted_candidates.swap(srcFolderName, destFolderName, candidateNumber)
+        accepted_candidates.swap(srcFolderName, destFolderName, candidateID)
     except TypeError:
-        print('Error: invalid input for a candidate number (must be an integer greater than or equal to 0)')
+        print('Error: invalid input for a candidate ID number (must be an integer greater than or equal to 0)')
     except IndexError:
         print('Error: cannot find a candidate with the number that is out of bounds')
     except KeyError:
@@ -237,10 +239,10 @@ def moveCandidateFromSelectionToWaitlistOption():
     folderName = ''
     try:
         folderName = input('Enter folder name: ')
-        candidateNumber = int(input('Enter candidate number: '))
+        candidateNumber = int(input('Enter candidate ID: '))
         accepted_candidates.removeCandidate(folderName, waitlisted_candidates, candidateNumber)
     except TypeError:
-        print('Error: invalid input for a candidate number (must be an integer greater than or equal to 0)')
+        print('Error: invalid input for a candidate ID number (must be an integer greater than or equal to 0)')
     except IndexError:
         print('Error: cannot find a candidate with the number that is out of bounds')
     except KeyError:
